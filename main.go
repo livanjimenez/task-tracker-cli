@@ -3,18 +3,13 @@ package main
 import (
 	"fmt"
 
-	"github.com/charmbracelet/lipgloss"
+	"github.com/livanjimenez/task-tracker-cli/cmd"
 )
 
 func main() {
-    style := lipgloss.NewStyle().
-        Foreground(lipgloss.Color("#FF0000")).
-        Background(lipgloss.Color("#0000FF")).
-        Bold(true).
-        Italic(true).
-        Width(20).
-        Align(lipgloss.Center)
+    rootCmd := cmd.RootCmd()
 
-    fmt.Println(style.Render("Hello, World!"))
-
+    if err := rootCmd.Execute(); err != nil {
+        fmt.Println(err)
+    }
 }

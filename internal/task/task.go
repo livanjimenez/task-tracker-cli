@@ -56,3 +56,91 @@ func AddTask(description string) error {
 
 	return WriteTasksToFile(tasks)
 }
+
+func UpdateTaskDescription(id int64, description string) error {
+	tasks, err := ReadTasksFromFile()
+	if err != nil {
+		return err
+	}
+
+	var taskExists bool = false
+	var updatedTasks []Task
+	for _, task := range tasks {
+		if task.ID == id {
+			taskExists = true
+			task.Description = description
+			task.UpdatedAt = time.Now()
+		}
+		updatedTasks = append(updatedTasks, task)
+	}
+
+	if !taskExists {
+		return fmt.Errorf("task not found (ID: %d)", id)
+	}
+
+	formattedId := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("#FFCC66")).
+		Render(fmt.Sprintf("(ID: %d)", id))
+	fmt.Printf("\nTask updated successfully: %s\n\n", formattedId)
+	return WriteTasksToFile(updatedTasks)
+}
+
+func DeleteTask(id int64) error {
+	tasks, err := ReadTasksFromFile()
+	if err != nil {
+		return err
+	}
+
+	var taskExists bool = false
+	var updatedTasks []Task
+	for _, task := range tasks {
+		if task.ID == id {
+			taskExists = true
+			continue
+		}
+		updatedTasks = append(updatedTasks, task)
+	}
+
+	if !taskExists {
+		return fmt.Errorf("task not found (ID: %d)", id)
+	}
+
+	formattedId := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("#FFCC66")).
+		Render(fmt.Sprintf("(ID: %d)", id))
+	fmt.Printf("\nTask deleted successfully: %s\n\n", formattedId)
+	return WriteTasksToFile(updatedTasks)
+}
+
+func ListTasks(status TaskStatus) error {
+	tasks, err := ReadTasksFromFile()
+	if err != nil {
+		return err
+	}
+
+	var tasksToDisplay []Task
+	for _, task := range tasks {
+		if status == "all" || task.Status == status {
+			tasksToDisplay = append(tasksToDisplay, task)
+		}
+	}
+
+	if len(tasksToDisplay) == 0 {
+		fmt.Println("No tasks found")
+		return nil
+	}
+
+	fmt.Println()
+	for _, task := range tasksToDisplay {
+		formattedId := lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color("#FFCC66")).
+			Render(fmt.Sprintf("(ID: %d)", task.ID))
+		fmt.Printf("%s %s\n", task.Description, formattedId)
+	}
+	fmt.Println()
+
+	return nil
+}
