@@ -17,13 +17,13 @@ func ListCmd() *cobra.Command {
     task-tracker list done
     `,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return RunListTasksCmd()
+			return RunListTasksCmd(args)
 		},
 	}
 	return cmd
 }
 
-func RunListTasksCmd() error {
+func RunListTasksCmd(args []string) error {
 	if len(args) > 0 {
 		status := task.TaskStatus(args[0])
 		return task.ListTasks(status)
